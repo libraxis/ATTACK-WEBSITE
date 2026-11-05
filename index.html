@@ -3,37 +3,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <title>Render Load Tester</title>
+  <meta name="theme-color" content="#0b1220">
+  <title>Universal HTTP Load Tester</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="shell">
     <header class="top">
-      <div class="brand-mark">RT</div>
-      <div><p class="eyebrow">FERRAMENTA DE DESEMPENHO</p><h1>Render Load Tester</h1></div>
-      <span class="tag">BETA · AUTORIZADO</span>
+      <div class="brand-mark">UL</div>
+      <div><p class="eyebrow">HTTP PERFORMANCE LAB</p><h1>Universal Load Tester</h1></div>
+      <span class="tag">MULTI-HOST</span>
     </header>
 
     <section class="intro">
-      <h2>Teste a capacidade do seu serviço.</h2>
-      <p>Execute requisições HTTP reais a partir do backend configurado no Render e acompanhe latência, taxa de sucesso e throughput.</p>
+      <h2>Teste o desempenho das suas aplicações.</h2>
+      <p>Uma central independente do provedor de hospedagem. Teste serviços próprios ou autorizados em Render, Vercel, Railway, VPS e outros ambientes.</p>
     </section>
 
     <section class="panel">
-      <h3>Configuração</h3>
+      <h3>Configuração do teste</h3>
       <div class="form-grid">
         <label class="wide">URL de destino
-          <input id="target" type="url" placeholder="https://seu-servico.onrender.com/health" required>
-          <small>O domínio precisa estar autorizado na lista ALLOWED_HOSTS do backend.</small>
+          <input id="target" type="url" placeholder="https://api.seudominio.com/health" required>
+          <small>Use o endereço HTTPS do endpoint que você controla ou tem autorização para testar.</small>
+        </label>
+        <label>Método HTTP
+          <select id="method"><option value="GET">GET</option><option value="HEAD">HEAD</option></select>
         </label>
         <label>Requisições por segundo
           <input id="rps" type="number" min="1" max="50" value="5">
-          <small>Limite máximo: 50 RPS.</small>
+          <small>Limite inicial: 50 RPS.</small>
         </label>
         <label>Concorrência máxima
           <input id="concurrency" type="number" min="1" max="20" value="5">
-          <small>Limite máximo: 20 conexões ativas.</small>
+          <small>Limite inicial: 20 conexões simultâneas.</small>
         </label>
         <label>Duração
           <select id="duration">
@@ -42,15 +45,14 @@
             <option value="60">1 minuto</option>
             <option value="120">2 minutos</option>
           </select>
-          <small>Limite máximo: 120 segundos.</small>
         </label>
-        <label>Endereço do backend (Render)
-          <input id="apiBase" type="url" placeholder="https://seu-executor.onrender.com">
-          <small>URL pública do serviço executor.</small>
+        <label class="wide">URL do executor (hospedado onde preferir)
+          <input id="apiBase" type="url" placeholder="https://seu-executor.exemplo.com">
+          <small>Este é o backend da ferramenta, não precisa estar no mesmo provedor do site testado.</small>
         </label>
-        <label class="wide">Chave de acesso (API_KEY)
-          <input id="apiKey" type="password" placeholder="Cole a chave configurada no Render" autocomplete="off">
-          <small>A chave fica apenas nesta sessão do navegador e não deve ser compartilhada.</small>
+        <label class="wide">Chave de acesso do executor
+          <input id="apiKey" type="password" placeholder="Sua chave privada do executor" autocomplete="off">
+          <small>É uma chave criada por você nas variáveis de ambiente do backend. Não é uma chave do Render, Vercel ou do site de destino.</small>
         </label>
       </div>
       <div class="actions">
@@ -58,7 +60,7 @@
         <button id="stopBtn" class="danger" disabled>Interromper teste</button>
         <span id="status" class="status">Aguardando configuração</span>
       </div>
-      <p class="notice">Use somente em serviços seus ou para os quais você tenha autorização. O executor aceita apenas HTTPS, GET/HEAD e domínios explicitamente autorizados. Limites máximos: 50 RPS, 20 conexões, 120 s e 6.000 tentativas por teste.</p>
+      <p class="notice">Use somente em aplicações próprias ou com autorização expressa. O executor aceita HTTPS, GET/HEAD e hostnames cadastrados na lista de autorização. Limites iniciais: 50 RPS, 20 conexões simultâneas, 120 segundos e 6.000 tentativas por teste.</p>
     </section>
 
     <section class="metrics">
@@ -72,14 +74,14 @@
       <div class="section-head"><h3>Atividade do teste</h3><span id="elapsed">00:00 / 00:30</span></div>
       <div class="progress"><div id="progressBar"></div></div>
       <div class="chart-wrap"><canvas id="chart" height="150" aria-label="Gráfico de respostas por segundo"></canvas></div>
-      <div class="legend"><span><i class="dot blue"></i> Respostas/s</span><span><i class="dot red"></i> Erros acumulados</span></div>
+      <div class="legend"><span><i class="dot blue"></i> Respostas/s</span></div>
     </section>
 
     <section class="panel">
-      <h3>Último resultado</h3>
+      <h3>Resultado</h3>
       <div id="result" class="empty">Nenhum teste executado nesta sessão.</div>
     </section>
-    <footer>Render Load Tester · Painel estático para GitHub Pages · Executor independente no Render</footer>
+    <footer>Universal HTTP Load Tester · Painel estático · Executor independente</footer>
   </main>
   <script src="app.js"></script>
 </body>
