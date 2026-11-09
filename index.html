@@ -50,17 +50,13 @@
           <input id="apiBase" type="url" placeholder="https://seu-executor.exemplo.com">
           <small>Este é o backend da ferramenta, não precisa estar no mesmo provedor do site testado.</small>
         </label>
-        <label class="wide">Chave de acesso do executor
-          <input id="apiKey" type="password" placeholder="Sua chave privada do executor" autocomplete="off">
-          <small>É uma chave criada por você nas variáveis de ambiente do backend. Não é uma chave do Render, Vercel ou do site de destino.</small>
-        </label>
-      </div>
+</div>
       <div class="actions">
         <button id="startBtn" class="primary">Iniciar teste</button>
         <button id="stopBtn" class="danger" disabled>Interromper teste</button>
         <span id="status" class="status">Aguardando configuração</span>
       </div>
-      <p class="notice">Use somente em aplicações próprias ou com autorização expressa. O executor aceita HTTPS, GET/HEAD e hostnames cadastrados na lista de autorização. Limites iniciais: 50 RPS, 20 conexões simultâneas, 120 segundos e 6.000 tentativas por teste.</p>
+      <p class="notice">Use somente em aplicações próprias ou com autorização expressa. Não é necessário informar senha ou chave. Por segurança, o administrador do executor precisa autorizar os domínios testáveis. Limites iniciais: 50 RPS, 20 conexões simultâneas, 120 segundos e 6.000 tentativas por teste.</p>
     </section>
 
     <section class="metrics">

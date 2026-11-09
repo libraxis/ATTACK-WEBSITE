@@ -2,7 +2,7 @@ const $ = id => document.getElementById(id);
 let activeTest = null, pollTimer = null, chartData = [];
 const fmt = n => Number(n || 0).toLocaleString('pt-BR');
 function baseUrl(){return $('apiBase').value.trim().replace(/\/$/,'')}
-function headers(){return {'Content-Type':'application/json','X-API-Key':$('apiKey').value.trim()}}
+function headers(){return {'Content-Type':'application/json'}}
 function setStatus(s){$('status').textContent=s}
 async function api(path,opts={}) {
   const r=await fetch(baseUrl()+path,{...opts,headers:{...headers(),...(opts.headers||{})}});
@@ -52,7 +52,7 @@ async function poll(){
 }
 $('startBtn').addEventListener('click',async()=>{
   try{
-    if(!baseUrl()||!$('apiKey').value.trim())throw new Error('Informe a URL do executor e a chave de acesso dele.');
+    if(!baseUrl())throw new Error('Informe a URL do executor.');
     const targetUrl=$('target').value.trim(),rps=Number($('rps').value),concurrency=Number($('concurrency').value),durationSeconds=Number($('duration').value),method=$('method').value;
     if(!/^https:\/\//i.test(targetUrl))throw new Error('O destino precisa usar HTTPS.');
     if(!Number.isInteger(rps)||rps<1||rps>50||!Number.isInteger(concurrency)||concurrency<1||concurrency>20)throw new Error('Confira os limites de RPS e concorrência.');
