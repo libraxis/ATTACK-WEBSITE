@@ -2,10 +2,10 @@
   "jobs": [
     {
       "name": "Meu site",
-      "url": "https://example.com/health",
+      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
       "method": "GET",
-      "enabled": false,
-      "duration_seconds": 60
+      "enabled": true,
+      "duration_seconds": 1
     }
   ]
 }
