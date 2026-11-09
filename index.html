@@ -1,84 +1,40 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b1220">
-  <title>Universal HTTP Load Tester</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTTP Cron • Monitor</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="shell">
-    <header class="top">
-      <div class="brand-mark">UL</div>
-      <div><p class="eyebrow">HTTP PERFORMANCE LAB</p><h1>Universal Load Tester</h1></div>
-      <span class="tag">MULTI-HOST</span>
-    </header>
-
-    <section class="intro">
-      <h2>Teste o desempenho das suas aplicações.</h2>
-      <p>Uma central independente do provedor de hospedagem. Teste serviços próprios ou autorizados em Render, Vercel, Railway, VPS e outros ambientes.</p>
-    </section>
-
-    <section class="panel">
-      <h3>Configuração do teste</h3>
-      <div class="form-grid">
-        <label class="wide">URL de destino
-          <input id="target" type="url" placeholder="https://api.seudominio.com/health" required>
-          <small>Use o endereço HTTPS do endpoint que você controla ou tem autorização para testar.</small>
-        </label>
-        <label>Método HTTP
-          <select id="method"><option value="GET">GET</option><option value="HEAD">HEAD</option></select>
-        </label>
-        <label>Requisições por segundo
-          <input id="rps" type="number" min="1" max="50" value="5">
-          <small>Limite inicial: 50 RPS.</small>
-        </label>
-        <label>Concorrência máxima
-          <input id="concurrency" type="number" min="1" max="20" value="5">
-          <small>Limite inicial: 20 conexões simultâneas.</small>
-        </label>
-        <label>Duração
-          <select id="duration">
-            <option value="10">10 segundos</option>
-            <option value="30" selected>30 segundos</option>
-            <option value="60">1 minuto</option>
-            <option value="120">2 minutos</option>
-          </select>
-        </label>
-        <label class="wide">URL do executor (hospedado onde preferir)
-          <input id="apiBase" type="url" placeholder="https://seu-executor.exemplo.com">
-          <small>Este é o backend da ferramenta, não precisa estar no mesmo provedor do site testado.</small>
-        </label>
-</div>
-      <div class="actions">
-        <button id="startBtn" class="primary">Iniciar teste</button>
-        <button id="stopBtn" class="danger" disabled>Interromper teste</button>
-        <span id="status" class="status">Aguardando configuração</span>
-      </div>
-      <p class="notice">Use somente em aplicações próprias ou com autorização expressa. Não é necessário informar senha ou chave. Por segurança, o administrador do executor precisa autorizar os domínios testáveis. Limites iniciais: 50 RPS, 20 conexões simultâneas, 120 segundos e 6.000 tentativas por teste.</p>
-    </section>
-
-    <section class="metrics">
-      <article class="metric"><span>Requisições concluídas</span><strong id="total">0</strong><small id="sent">0 tentativas iniciadas</small></article>
-      <article class="metric"><span>Taxa de sucesso</span><strong id="success">—</strong><small id="errors">0 erros</small></article>
-      <article class="metric"><span>Latência média</span><strong id="avg">—</strong><small id="p95">P95: —</small></article>
-      <article class="metric"><span>Throughput observado</span><strong id="throughput">—</strong><small>respostas por segundo</small></article>
-    </section>
-
-    <section class="panel">
-      <div class="section-head"><h3>Atividade do teste</h3><span id="elapsed">00:00 / 00:30</span></div>
-      <div class="progress"><div id="progressBar"></div></div>
-      <div class="chart-wrap"><canvas id="chart" height="150" aria-label="Gráfico de respostas por segundo"></canvas></div>
-      <div class="legend"><span><i class="dot blue"></i> Respostas/s</span></div>
-    </section>
-
-    <section class="panel">
-      <h3>Resultado</h3>
-      <div id="result" class="empty">Nenhum teste executado nesta sessão.</div>
-    </section>
-    <footer>Universal HTTP Load Tester · Painel estático · Executor independente</footer>
-  </main>
-  <script src="app.js"></script>
-</body>
-</html>
+<header><div class="wrap"><div class="brand"><span class="mark">⏱</span><div><h1>HTTP Cron</h1><p>Agendador de requisições HTTP</p></div></div><span class="pill">GitHub Pages + Actions</span></div></header>
+<main class="wrap">
+<section class="hero"><div><p class="eyebrow">MONITORAMENTO PROGRAMADO</p><h2>Suas requisições, em horários definidos.</h2><p>Consulte os agendamentos configurados neste repositório e acompanhe a última execução registrada.</p></div><div class="status"><span class="dot"></span> Painel conectado ao arquivo jobs.json</div></section>
+<section class="panel">
+<div class="section-head"><div><h3>Agendamentos</h3><p id="summary">Carregando configurações…</p></div><button id="refresh" class="secondary">Atualizar</button></div>
+<div id="jobs" class="jobs"><div class="empty">Carregando…</div></div>
+</section>
+<section class="panel info">
+<h3>Como alterar os agendamentos</h3>
+<ol>
+<li>Abra o arquivo <code>jobs.json</code> no seu repositório GitHub.</li>
+<li>Edite ou adicione um item seguindo o exemplo abaixo.</li>
+<li>Salve com <b>Commit changes</b>. O GitHub Actions executará os itens habilitados nos intervalos configurados.</li>
+</ol>
+<pre>{
+  "jobs": [
+    {
+      "name": "Meu site",
+      "url": "https://exemplo.com/health",
+      "method": "GET",
+      "enabled": true,
+      "interval_minutes": 5
+    }
+  ]
+}</pre>
+<p class="notice">Limite desta versão: uma requisição por destino em cada execução agendada; intervalo mínimo de 5 minutos. Não é uma ferramenta de teste de carga.</p>
+<p>O histórico detalhado fica na aba <b>Actions</b> do repositório. O painel mostra o registro publicado pelo workflow.</p>
+</section>
+<footer>HTTP Cron • Execuções periódicas de baixa frequência</footer>
+</main>
+<script src="app.js"></script>
+</body></html>

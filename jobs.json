@@ -1,0 +1,11 @@
+{
+  "jobs": [
+    {
+      "name": "Meu site",
+      "url": "https://example.com/",
+      "method": "GET",
+      "enabled": false,
+      "interval_minutes": 5
+    }
+  ]
+}

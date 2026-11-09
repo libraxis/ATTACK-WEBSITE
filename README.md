@@ -1,65 +1,49 @@
-# Universal HTTP Load Tester — versão sem chave
+# HTTP Cron — GitHub Pages + GitHub Actions
 
-Painel estático para GitHub Pages + executor Node.js para Render, Railway, VPS ou outro host Node.
+Projeto simples de agendamento periódico de requisições HTTP. O GitHub Pages hospeda o painel; o GitHub Actions executa as verificações remotamente.
 
-## Como funciona
+## Instalação
 
-- O painel não pede API_KEY, senha ou chave privada.
-- O site de destino não precisa ter autenticação.
-- O executor aceita destinos HTTPS públicos cujo hostname esteja cadastrado em `ALLOWED_HOSTS`.
-- Cadastre somente sites próprios ou de terceiros para os quais você tenha autorização expressa para realizar testes de carga.
+1. Crie um repositório no GitHub e envie todos os arquivos desta pasta (incluindo `.github/workflows/cron.yml`).
+2. No repositório, acesse **Settings → Pages**.
+3. Em **Build and deployment**, selecione **Deploy from a branch**, escolha `main` e a pasta `/ (root)`. Salve.
+4. Acesse **Settings → Actions → General → Workflow permissions** e permita **Read and write permissions**.
+5. Abra a aba **Actions**, selecione **HTTP Cron** e clique em **Run workflow** para testar. Depois ele será executado automaticamente a cada 5 minutos.
+6. O endereço do painel será `https://SEU-USUARIO.github.io/NOME-DO-REPOSITORIO/`.
 
-A lista `ALLOWED_HOSTS` é uma autorização configurada pelo administrador do executor, não uma chave que o usuário precisa digitar. Ela impede que um executor público seja usado para atingir domínios arbitrários.
+## Configurar destinos
 
-## Publicar o painel no GitHub Pages
+Edite `jobs.json` diretamente pelo GitHub e faça commit:
 
-1. Extraia este ZIP.
-2. Envie `index.html`, `styles.css`, `app.js` e `README.md` diretamente para a raiz do repositório.
-3. O diretório `backend` pode ficar no mesmo repositório, mas o Pages não o executa.
-4. GitHub: **Settings → Pages → Deploy from a branch → main → /(root) → Save**.
-5. Aguarde a execução de Pages em **Actions** ficar verde.
+```json
+{
+  "jobs": [
+    {
+      "name": "Verificação do meu site",
+      "url": "https://seu-dominio.com/health",
+      "method": "GET",
+      "enabled": true,
+      "interval_minutes": 5
+    }
+  ]
+}
+```
 
-## Publicar o executor
+- `enabled`: `true` ativa; `false` pausa.
+- `interval_minutes`: múltiplos de 5, de 5 a 60 minutos.
+- Métodos permitidos: `GET`, `HEAD` e `POST`.
+- Máximo de 20 destinos; timeout de 15 segundos por requisição.
+- O workflow faz no máximo uma requisição por destino em cada execução programada.
+- São aceitos somente destinos HTTP(S) públicos. Não use para enviar tráfego a sistemas sem autorização.
 
-No Render, Railway ou host Node:
+## Limitações importantes
 
-- Root Directory: `backend`
-- Runtime: Node 20+
-- Build Command: `npm install`
-- Start Command: `npm start`
+- O agendamento do GitHub Actions é aproximado; o GitHub pode atrasar execuções em períodos de alta demanda.
+- O menor intervalo deste projeto é 5 minutos. Não é um serviço de execução a cada segundo nem um gerador de carga.
+- O painel é estático. Para alterar os agendamentos, edite `jobs.json` no GitHub. O painel não grava alterações no repositório.
+- O histórico básico fica em `status.json`; o log completo de cada execução fica na aba **Actions**.
+- Repositórios públicos e privados têm limites e regras de uso do GitHub Actions. Confira as cotas do seu plano.
 
-Configure estas variáveis de ambiente:
+## Segurança
 
-| Variável | Valor |
-|---|---|
-| `ALLOWED_HOSTS` | Hostnames exatos dos sites autorizados, separados por vírgula |
-| `ALLOWED_ORIGINS` | Origem exata do GitHub Pages, por exemplo `https://usuario.github.io` |
-| `PORT` | Fornecida automaticamente pela maioria dos hosts |
-
-Exemplo:
-- `ALLOWED_HOSTS=meu-site.com,api.meu-site.com,site-de-terceiro-autorizado.com`
-- `ALLOWED_ORIGINS=https://usuario.github.io`
-
-Não coloque `https://` nem caminhos em `ALLOWED_HOSTS`. Cadastre apenas hostnames para os quais você tem autorização. Não use wildcard.
-
-## Utilização
-
-1. Abra o painel GitHub Pages.
-2. Informe a URL HTTPS do destino.
-3. Informe a URL pública do executor.
-4. Selecione GET ou HEAD, RPS, concorrência e duração.
-5. Comece com 1–5 RPS por 10 segundos e aumente somente dentro do escopo autorizado.
-
-## Limites e segurança
-
-- HTTPS obrigatório; somente GET e HEAD.
-- Hostname precisa estar em `ALLOWED_HOSTS`.
-- IPs privados, loopback, link-local e endereços especiais são bloqueados.
-- Redirecionamentos não são seguidos.
-- Máximo de 50 RPS, 20 conexões simultâneas, 120 segundos e 6.000 tentativas por teste.
-- Timeout por requisição: 12 segundos.
-- Apenas um teste pode estar em execução por vez neste executor.
-- O estado e o histórico ficam em memória; reiniciar o executor apaga testes anteriores.
-- Não é um gerador distribuído; o throughput real depende dos recursos do executor e da rede.
-
-**Importante:** remover a chave simplifica o uso, mas não torna seguro deixar qualquer domínio disponível para qualquer pessoa. Mantenha a lista de domínios restrita a testes autorizados e a origem do painel configurada corretamente.
+Não coloque tokens, senhas ou cabeçalhos secretos em `jobs.json`, pois o arquivo pode ficar público. Esta versão não envia corpo POST nem permite headers personalizados.
