@@ -1,40 +1,9 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HTTP Cron • Monitor</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header><div class="wrap"><div class="brand"><span class="mark">⏱</span><div><h1>HTTP Cron</h1><p>Agendador de requisições HTTP</p></div></div><span class="pill">GitHub Pages + Actions</span></div></header>
-<main class="wrap">
-<section class="hero"><div><p class="eyebrow">MONITORAMENTO PROGRAMADO</p><h2>Suas requisições, em horários definidos.</h2><p>Consulte os agendamentos configurados neste repositório e acompanhe a última execução registrada.</p></div><div class="status"><span class="dot"></span> Painel conectado ao arquivo jobs.json</div></section>
-<section class="panel">
-<div class="section-head"><div><h3>Agendamentos</h3><p id="summary">Carregando configurações…</p></div><button id="refresh" class="secondary">Atualizar</button></div>
-<div id="jobs" class="jobs"><div class="empty">Carregando…</div></div>
-</section>
-<section class="panel info">
-<h3>Como alterar os agendamentos</h3>
-<ol>
-<li>Abra o arquivo <code>jobs.json</code> no seu repositório GitHub.</li>
-<li>Edite ou adicione um item seguindo o exemplo abaixo.</li>
-<li>Salve com <b>Commit changes</b>. O GitHub Actions executará os itens habilitados nos intervalos configurados.</li>
-</ol>
-<pre>{
-  "jobs": [
-    {
-      "name": "Meu site",
-      "url": "https://exemplo.com/health",
-      "method": "GET",
-      "enabled": true,
-      "interval_minutes": 5
-    }
-  ]
-}</pre>
-<p class="notice">Limite desta versão: uma requisição por destino em cada execução agendada; intervalo mínimo de 5 minutos. Não é uma ferramenta de teste de carga.</p>
-<p>O histórico detalhado fica na aba <b>Actions</b> do repositório. O painel mostra o registro publicado pelo workflow.</p>
-</section>
-<footer>HTTP Cron • Execuções periódicas de baixa frequência</footer>
-</main>
-<script src="app.js"></script>
-</body></html>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HTTP Cron</title><link rel="stylesheet" href="style.css"></head><body><header><div class="wrap"><div class="brand"><span class="mark">⏱</span><div><h1>HTTP Cron</h1><p>Verificação HTTP controlada</p></div></div><span class="pill">1 requisição por segundo</span></div></header><main class="wrap"><section class="hero"><p class="eyebrow">EXECUÇÃO CONTROLADA</p><h2>Uma requisição por segundo, pelo tempo definido.</h2><p>O GitHub Actions executa o teste remotamente. Configure o destino e a duração em <code>jobs.json</code>.</p></section><section class="panel"><div class="section-head"><div><h3>Destino configurado</h3><p id="summary">Carregando…</p></div><button id="refresh" class="secondary">Atualizar</button></div><div id="jobs">Carregando…</div></section><section class="panel"><h3>Como configurar</h3><p>Edite <code>jobs.json</code> no GitHub e faça commit. Para iniciar imediatamente, abra <b>Actions → HTTP Cron → Run workflow</b>.</p><pre>{
+  "jobs": [{
+    "name": "Meu site",
+    "url": "https://seu-dominio.com/health",
+    "method": "GET",
+    "enabled": true,
+    "duration_seconds": 60
+  }]
+}</pre><p class="notice">Taxa fixa de até 1 requisição por segundo. Duração máxima de 240 segundos por execução. Apenas um destino ativo por vez. Use somente em sistemas que você controla ou tem autorização para testar.</p><p>O resultado resumido fica em <code>status.json</code>. O log completo fica na aba <b>Actions</b>.</p></section><footer>HTTP Cron • GitHub Pages + GitHub Actions</footer></main><script src="app.js"></script></body></html>
