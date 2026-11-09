@@ -18,7 +18,7 @@ jobs:
       - name: Execute due HTTP checks
         env:
           TZ: UTC
-        run: python3 scripts/run_jobs.py
+        run: python3 script/run_jobs.py
       - name: Publish execution status
         run: |
           git config user.name "github-actions[bot]"
