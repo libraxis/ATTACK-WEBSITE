@@ -1,66 +1,80 @@
-import json, os, socket, ipaddress, urllib.request, urllib.error
+import json, socket, ipaddress, time, urllib.request, urllib.error
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
-CONFIG="jobs.json"
-STATUS="status.json"
-ALLOWED_METHODS={"GET","HEAD","POST"}
-MAX_JOBS=20
-TIMEOUT=15
+MAX_DURATION = 240
+REQUEST_TIMEOUT = 0.8
+RATE_SECONDS = 1.0
 
-def public_http_url(raw):
-    p=urlparse(raw)
-    if p.scheme not in ("http","https") or not p.hostname:
-        raise ValueError("URL deve usar http:// ou https://")
+def validate_public_url(raw):
+    p = urlparse(raw)
+    if p.scheme not in ('http', 'https') or not p.hostname:
+        raise ValueError('URL deve usar http:// ou https://')
     if p.username or p.password:
-        raise ValueError("URL não pode conter credenciais")
-    try:
-        addresses=socket.getaddrinfo(p.hostname, p.port or (443 if p.scheme=="https" else 80))
-        for a in addresses:
-            ip=ipaddress.ip_address(a[4][0])
-            if not ip.is_global:
-                raise ValueError("Destino precisa ser um endereço público")
-    except socket.gaierror:
-        raise ValueError("Não foi possível resolver o domínio")
-    return p
+        raise ValueError('URL não pode conter credenciais')
+    infos = socket.getaddrinfo(p.hostname, p.port or (443 if p.scheme == 'https' else 80))
+    for info in infos:
+        if not ipaddress.ip_address(info[4][0]).is_global:
+            raise ValueError('O destino precisa ter endereço IP público')
 
 def main():
-    with open(CONFIG,encoding="utf-8") as f: cfg=json.load(f)
-    jobs=cfg.get("jobs",[])
-    if not isinstance(jobs,list) or len(jobs)>MAX_JOBS:
-        raise SystemExit(f"jobs.json deve conter no máximo {MAX_JOBS} itens")
-    now=datetime.now(timezone.utc)
-    due=[]
-    for j in jobs:
-        if not j.get("enabled",False): continue
+    with open('jobs.json', encoding='utf-8') as f:
+        cfg = json.load(f)
+    jobs = [j for j in cfg.get('jobs', []) if j.get('enabled', False)]
+    if len(jobs) != 1:
+        raise SystemExit('Ative exatamente um destino em jobs.json para executar o teste.')
+    job = jobs[0]
+    method = str(job.get('method', 'GET')).upper()
+    if method not in ('GET', 'HEAD'):
+        raise SystemExit('Métodos permitidos: GET e HEAD.')
+    url = str(job.get('url', '')).strip()
+    validate_public_url(url)
+    duration = int(job.get('duration_seconds', 60))
+    if not 1 <= duration <= MAX_DURATION:
+        raise SystemExit(f'duration_seconds deve estar entre 1 e {MAX_DURATION}.')
+    name = str(job.get('name', 'Meu site'))[:80]
+    total = ok = errors = 0
+    codes = {}
+    start = time.monotonic()
+    next_tick = start
+    print(f'Iniciando {name}: {method} {url} | até 1 requisição/s | {duration}s')
+    while time.monotonic() - start < duration:
+        delay = next_tick - time.monotonic()
+        if delay > 0:
+            time.sleep(delay)
+        if time.monotonic() - start >= duration:
+            break
+        total += 1
+        req = urllib.request.Request(url, method=method, headers={'User-Agent':'HTTP-Cron-GitHubActions/1.0','Accept':'*/*'})
         try:
-            interval=int(j.get("interval_minutes",5))
-            if interval<5 or interval>60 or interval%5:
-                raise ValueError("interval_minutes deve ser múltiplo de 5, entre 5 e 60")
-            if now.minute % interval != 0: continue
-            method=str(j.get("method","GET")).upper()
-            if method not in ALLOWED_METHODS: raise ValueError("Método permitido: GET, HEAD ou POST")
-            p=public_http_url(str(j.get("url","")))
-            req=urllib.request.Request(j["url"],method=method,headers={"User-Agent":"HTTP-Cron-GitHubActions/1.0","Accept":"*/*"})
-            started=datetime.now(timezone.utc)
-            try:
-                with urllib.request.urlopen(req,timeout=TIMEOUT) as resp:
-                    code=resp.status
-                    resp.read(1024)
-            except urllib.error.HTTPError as e:
-                code=e.code
-            due.append({"name":str(j.get("name","Sem nome"))[:80],"status":str(code),"time":started.strftime("%Y-%m-%d %H:%M UTC")})
+            with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as response:
+                code = response.status
+                response.read(256)
+            ok += 1
+        except urllib.error.HTTPError as e:
+            code = e.code
+            errors += 1
         except Exception as e:
-            due.append({"name":str(j.get("name","Sem nome"))[:80],"status":"Erro: "+str(e)[:100],"time":now.strftime("%Y-%m-%d %H:%M UTC")})
-    old=[]
-    if os.path.exists(STATUS):
-        try:
-            with open(STATUS,encoding="utf-8") as f: old=json.load(f).get("results",[])
-        except Exception: pass
-    # Keep latest result per job, with a compact recent history.
-    merged={x.get("name"):x for x in old}
-    for x in due: merged[x["name"]]=x
-    out={"updated_at":now.strftime("%Y-%m-%d %H:%M UTC"),"results":list(merged.values())[-MAX_JOBS:]}
-    with open(STATUS,"w",encoding="utf-8") as f: json.dump(out,f,ensure_ascii=False,indent=2)
-    print(json.dumps(due,ensure_ascii=False,indent=2))
-if __name__=="__main__": main()
+            code = 'ERR'
+            errors += 1
+            print(f'Requisição {total}: {str(e)[:180]}')
+        codes[str(code)] = codes.get(str(code), 0) + 1
+        print(f'Requisição {total}: HTTP {code}')
+        next_tick += RATE_SECONDS
+        if next_tick < time.monotonic():
+            next_tick = time.monotonic() + RATE_SECONDS
+    summary = f'{total} tentativas; {ok} respostas; {errors} erros; códigos: {codes}'
+    result = {'name':name,'summary':summary,'total':total,'success':ok,'errors':errors,'codes':codes,'time':datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}
+    try:
+        with open('status.json', encoding='utf-8') as f:
+            old = json.load(f).get('results', [])
+    except Exception:
+        old = []
+    old = [x for x in old if x.get('name') != name]
+    old.append(result)
+    with open('status.json', 'w', encoding='utf-8') as f:
+        json.dump({'results':old[-20:]}, f, ensure_ascii=False, indent=2)
+    print(summary)
+
+if __name__ == '__main__':
+    main()
