@@ -4,7 +4,7 @@
       "name": "Meu site",
       "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
       "method": "GET",
-      "enabled": false,
+      "enabled": true,
       "interval_minutes": 0
     }
   ]
