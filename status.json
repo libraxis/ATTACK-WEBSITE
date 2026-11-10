@@ -4,51 +4,6 @@
       "name": "Meu site",
       "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
       "method": "GET",
-      "time": "2026-11-10 04:36:42 UTC",
-      "status": "SUCESSO",
-      "http_code": 200,
-      "message": "Resposta HTTP recebida"
-    },
-    {
-      "name": "Meu site",
-      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
-      "method": "GET",
-      "time": "2026-11-10 04:36:46 UTC",
-      "status": "SUCESSO",
-      "http_code": 200,
-      "message": "Resposta HTTP recebida"
-    },
-    {
-      "name": "Meu site",
-      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
-      "method": "GET",
-      "time": "2026-11-10 04:36:48 UTC",
-      "status": "SUCESSO",
-      "http_code": 200,
-      "message": "Resposta HTTP recebida"
-    },
-    {
-      "name": "Meu site",
-      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
-      "method": "GET",
-      "time": "2026-11-10 04:36:50 UTC",
-      "status": "SUCESSO",
-      "http_code": 200,
-      "message": "Resposta HTTP recebida"
-    },
-    {
-      "name": "Meu site",
-      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
-      "method": "GET",
-      "time": "2026-11-10 04:36:52 UTC",
-      "status": "SUCESSO",
-      "http_code": 200,
-      "message": "Resposta HTTP recebida"
-    },
-    {
-      "name": "Meu site",
-      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
-      "method": "GET",
       "time": "2026-11-10 04:36:55 UTC",
       "status": "SUCESSO",
       "http_code": 200,
@@ -899,7 +854,52 @@
       "status": "SUCESSO",
       "http_code": 200,
       "message": "Resposta HTTP recebida"
+    },
+    {
+      "name": "Meu site",
+      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
+      "method": "GET",
+      "time": "2026-11-10 13:02:53 UTC",
+      "status": "SUCESSO",
+      "http_code": 200,
+      "message": "Resposta HTTP recebida"
+    },
+    {
+      "name": "Meu site",
+      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
+      "method": "GET",
+      "time": "2026-11-10 13:02:55 UTC",
+      "status": "SUCESSO",
+      "http_code": 200,
+      "message": "Resposta HTTP recebida"
+    },
+    {
+      "name": "Meu site",
+      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
+      "method": "GET",
+      "time": "2026-11-10 13:02:58 UTC",
+      "status": "FALHA",
+      "http_code": null,
+      "message": "<urlopen error _ssl.c:1063: The handshake operation timed out>"
+    },
+    {
+      "name": "Meu site",
+      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
+      "method": "GET",
+      "time": "2026-11-10 13:03:09 UTC",
+      "status": "SUCESSO",
+      "http_code": 200,
+      "message": "Resposta HTTP recebida"
+    },
+    {
+      "name": "Meu site",
+      "url": "https://www.eprotocolo.pr.gov.br/spiweb/telaInicial.do?action=iniciarProcesso",
+      "method": "GET",
+      "time": "2026-11-10 13:03:11 UTC",
+      "status": "SUCESSO",
+      "http_code": 200,
+      "message": "Resposta HTTP recebida"
     }
   ],
-  "updated_at": "2026-11-10 13:02:52 UTC"
+  "updated_at": "2026-11-10 13:03:13 UTC"
 }
